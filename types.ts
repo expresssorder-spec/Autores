@@ -10,13 +10,11 @@ export interface Message {
   text: string;
   sender: 'user' | 'bot';
   timestamp: Date;
-  isAiGenerated?: boolean;
 }
 
 export interface StoreSettings {
   storeName: string;
-  aiPersona: string;
-  useAiFallback: boolean;
+  fallbackMessage: string;
 }
 
 export type UserRole = 'admin' | 'user';

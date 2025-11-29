@@ -78,11 +78,6 @@ export const ChatSimulator: React.FC<ChatSimulatorProps> = ({ messages, onSendMe
                   : 'bg-white text-gray-800 rounded-tl-none'
               }`}
             >
-              {msg.isAiGenerated && (
-                <span className="absolute -top-2 -left-2 text-[10px] bg-indigo-100 text-indigo-700 px-1 rounded border border-indigo-200">
-                    AI
-                </span>
-              )}
               <p className="whitespace-pre-wrap">{msg.text}</p>
               <p className="text-[10px] text-gray-400 text-right mt-1">
                 {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

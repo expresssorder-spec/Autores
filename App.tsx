@@ -4,8 +4,7 @@ import { ChatSimulator } from './components/ChatSimulator';
 import { RuleManager } from './components/RuleManager';
 import { AuthScreen } from './components/AuthScreen';
 import { AdminDashboard } from './components/AdminDashboard';
-import { generateSmartReply } from './services/geminiService';
-import { MessageSquare, Settings, Sparkles, AlertCircle, ShoppingBag, Wifi, WifiOff, Smartphone, Copy, X, Loader2, LogOut, User as UserIcon, MapPin } from 'lucide-react';
+import { MessageSquare, Settings, AlertCircle, ShoppingBag, Wifi, WifiOff, Smartphone, Copy, X, Loader2, LogOut, User as UserIcon, MapPin } from 'lucide-react';
 
 const DEFAULT_RULES: Rule[] = [
   { id: '1', keywords: ['prix', 'price', 'taman', 'bach'], response: 'The price for this item is 299 DH. Free shipping on orders over 500 DH!', isActive: true },
@@ -15,8 +14,7 @@ const DEFAULT_RULES: Rule[] = [
 
 const DEFAULT_SETTINGS: StoreSettings = {
     storeName: 'My Awesome Store',
-    aiPersona: 'You are a helpful and polite sales assistant speaking Darija, French or English depending on the user.',
-    useAiFallback: true,
+    fallbackMessage: "I'm sorry, I didn't quite catch that. Could you please rephrase or contact our support team?",
 };
 
 // Simulated Random Data Generators
@@ -221,7 +219,6 @@ const App: React.FC = () => {
     // 2. Simulate Delay
     setTimeout(async () => {
       let responseText = '';
-      let isAi = false;
 
       // 3. Keyword Matching (Using Current User's Rules)
       const normalizedText = text.toLowerCase();
@@ -231,20 +228,16 @@ const App: React.FC = () => {
 
       if (matchedRule) {
         responseText = matchedRule.response;
-      } else if (currentUser.settings.useAiFallback) {
-        // 4. AI Fallback (Using Current User's Settings)
-        responseText = await generateSmartReply(text, currentUser.settings, currentUser.rules);
-        isAi = true;
       } else {
-        responseText = "Sorry, I didn't understand that. Please contact support.";
+        // 4. Fallback Message
+        responseText = currentUser.settings.fallbackMessage || "Sorry, I didn't understand that. Please contact support.";
       }
 
       const botMsg: Message = {
         id: (Date.now() + 1).toString(),
         text: responseText,
         sender: 'bot',
-        timestamp: new Date(),
-        isAiGenerated: isAi
+        timestamp: new Date()
       };
 
       setMessages(prev => [...prev, botMsg]);
@@ -253,7 +246,7 @@ const App: React.FC = () => {
       // Track stats
       incrementMessageStats();
 
-    }, 1500); 
+    }, 1000); 
   };
 
   // --- Rule CRUD Wrappers ---
@@ -421,30 +414,16 @@ const App: React.FC = () => {
                         />
                     </div>
 
-                    <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                            <label className="flex items-center gap-2 font-medium text-indigo-900 cursor-pointer">
-                                <Sparkles size={16} className="text-indigo-600" />
-                                Enable AI Fallback
-                            </label>
-                            <div 
-                                className={`w-12 h-6 rounded-full p-1 cursor-pointer transition-colors ${currentUser.settings.useAiFallback ? 'bg-indigo-600' : 'bg-gray-300'}`}
-                                onClick={() => updateUserData({ settings: { ...currentUser.settings, useAiFallback: !currentUser.settings.useAiFallback } })}
-                            >
-                                <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform ${currentUser.settings.useAiFallback ? 'translate-x-6' : 'translate-x-0'}`} />
-                            </div>
-                        </div>
-                        <p className="text-sm text-indigo-700 mb-4">
-                            When enabled, if a user message doesn't match any keyword, Gemini AI will generate a response based on the persona below.
-                        </p>
-
-                         <div>
-                            <label className="block text-sm font-medium text-indigo-900 mb-2">AI Persona & Instructions</label>
+                    <div className="bg-gray-50 border border-gray-100 p-4 rounded-lg">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-800 mb-2">Default Fallback Message</label>
+                            <p className="text-xs text-gray-500 mb-2">This message is sent when the bot doesn't understand the customer's question (no keyword match).</p>
                             <textarea 
-                                value={currentUser.settings.aiPersona}
-                                onChange={(e) => updateUserData({ settings: { ...currentUser.settings, aiPersona: e.target.value } })}
+                                value={currentUser.settings.fallbackMessage}
+                                onChange={(e) => updateUserData({ settings: { ...currentUser.settings, fallbackMessage: e.target.value } })}
                                 rows={4}
-                                className="w-full border border-indigo-200 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
+                                className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
+                                placeholder="e.g. Sorry, I didn't understand. Please contact human support."
                             />
                         </div>
                     </div>

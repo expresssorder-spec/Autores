@@ -16,21 +16,12 @@
           scrollbar-width: none;
       }
     </style>
-    <!-- CRITICAL FIX: Polyfill 'process' for browser environment to prevent crashes -->
-    <script>
-      window.process = {
-        env: {
-          NODE_ENV: 'production'
-        }
-      };
-    </script>
-<script type="importmap">
+  <script type="importmap">
 {
   "imports": {
     "react": "https://aistudiocdn.com/react@^19.2.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
     "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
     "papaparse": "https://aistudiocdn.com/papaparse@^5.5.3",
     "xlsx": "https://aistudiocdn.com/xlsx@^0.18.5",
