@@ -6,17 +6,10 @@ export const generateSmartReply = async (
   settings: StoreSettings,
   rules: Rule[]
 ): Promise<string> => {
-  // Check for API Key safely using the injected value from Vite
-  const apiKey = process.env.API_KEY;
-  
-  if (!apiKey || typeof apiKey !== 'string' || apiKey.trim() === '') {
-    console.warn("Gemini API Key is missing or invalid.");
-    return "Error: API Key is missing. Please configure it in your Vercel project settings.";
-  }
-
   try {
-    // Initialize client only when needed
-    const ai = new GoogleGenAI({ apiKey: apiKey });
+    // Initialize client using process.env.API_KEY directly as per guidelines.
+    // The environment variable is assumed to be pre-configured and valid.
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
     const ruleContext = rules
       .map(r => `If user asks about [${r.keywords.join(', ')}], the policy is: "${r.response}"`)

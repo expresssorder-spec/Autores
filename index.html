@@ -16,7 +16,15 @@
           scrollbar-width: none;
       }
     </style>
-  <script type="importmap">
+    <!-- CRITICAL FIX: Polyfill 'process' for browser environment to prevent crashes -->
+    <script>
+      window.process = {
+        env: {
+          NODE_ENV: 'production'
+        }
+      };
+    </script>
+<script type="importmap">
 {
   "imports": {
     "react": "https://aistudiocdn.com/react@^19.2.0",
