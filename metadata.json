@@ -1,5 +1,5 @@
 {
   "name": "AutoResponda - WhatsApp Bot Simulator",
-  "description": "A visual builder and simulator for WhatsApp Business automation. Define keyword-based rules and use Gemini AI for smart fallback responses. Perfect for testing E-commerce chat flows.",
+  "description": "A visual builder and simulator for WhatsApp Business automation. Define keyword-based rules for smart responses. Perfect for testing E-commerce chat flows.",
   "requestFramePermissions": []
 }

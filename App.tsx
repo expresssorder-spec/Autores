@@ -160,6 +160,7 @@ const App: React.FC = () => {
   const [connectStep, setConnectStep] = useState<'input' | 'loading' | 'code' | 'success'>('input');
   const [tempPhoneNumber, setTempPhoneNumber] = useState('+212 ');
   const [pairingCode, setPairingCode] = useState('');
+  const [phoneError, setPhoneError] = useState('');
 
   // --- Core Logic ---
 
@@ -173,7 +174,14 @@ const App: React.FC = () => {
   };
 
   const handleGetCode = () => {
-    if (tempPhoneNumber.length < 10) return;
+    // Validation
+    const cleanNumber = tempPhoneNumber.replace(/[^0-9+]/g, '');
+    if (cleanNumber.length < 10) {
+        setPhoneError('Please enter a valid phone number (at least 10 digits).');
+        return;
+    }
+
+    setPhoneError('');
     setConnectStep('loading');
     setTimeout(() => {
         setPairingCode(generatePairingCode());
@@ -479,11 +487,19 @@ const App: React.FC = () => {
                                         <input 
                                             type="text" 
                                             value={tempPhoneNumber}
-                                            onChange={(e) => setTempPhoneNumber(e.target.value)}
-                                            className="w-full text-lg p-3 border-b-2 border-[#00897b] focus:outline-none bg-gray-50 rounded-t-md font-mono"
+                                            onChange={(e) => {
+                                                setTempPhoneNumber(e.target.value);
+                                                setPhoneError('');
+                                            }}
+                                            className={`w-full text-lg p-3 border-b-2 focus:outline-none bg-gray-50 rounded-t-md font-mono ${phoneError ? 'border-red-500 bg-red-50' : 'border-[#00897b]'}`}
                                             placeholder="+212 600000000"
                                         />
                                     </div>
+                                    {phoneError && (
+                                        <div className="flex items-center gap-1 mt-2 text-red-500 text-xs">
+                                            <AlertCircle size={12} /> {phoneError}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <button 
