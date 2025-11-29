@@ -1,18 +1,25 @@
 import { GoogleGenAI } from "@google/genai";
 import { Rule, StoreSettings } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// We do NOT initialize 'ai' here globally to prevent crashes if process.env is undefined at startup.
+// const ai = new GoogleGenAI({ apiKey: process.env.API_KEY }); 
 
 export const generateSmartReply = async (
   userMessage: string,
   settings: StoreSettings,
   rules: Rule[]
 ): Promise<string> => {
-  if (!process.env.API_KEY) {
+  // Check for API Key safely
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    console.warn("Gemini API Key is missing.");
     return "Error: API Key is missing. I cannot generate an AI response.";
   }
 
   try {
+    // Initialize client only when needed
+    const ai = new GoogleGenAI({ apiKey: apiKey });
+
     // We provide the existing rules as context so the AI knows what has already been defined manually,
     // although this function is typically called when no manual rule matched.
     const ruleContext = rules
