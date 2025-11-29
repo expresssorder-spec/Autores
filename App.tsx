@@ -174,34 +174,53 @@ const App: React.FC = () => {
   };
 
   const handleGetCode = () => {
-    // Validation
-    const cleanNumber = tempPhoneNumber.replace(/[^0-9+]/g, '');
-    if (cleanNumber.length < 10) {
-        setPhoneError('Please enter a valid phone number (at least 10 digits).');
+    // Relaxed Validation: Just check if there are at least 6 digits
+    const cleanNumber = tempPhoneNumber.replace(/[^0-9]/g, '');
+    if (cleanNumber.length < 6) {
+        setPhoneError('Please enter a valid phone number.');
         return;
     }
 
     setPhoneError('');
     setConnectStep('loading');
+    
+    // Faster feedback
     setTimeout(() => {
         setPairingCode(generatePairingCode());
         setConnectStep('code');
-    }, 1500);
+    }, 1000);
   };
 
   const handleConfirmConnection = () => {
     setConnectStep('success');
+    
     setTimeout(() => {
-        // Update User Account with Phone Number and Connection Status
-        updateUserData({
-            isConnected: true,
-            phoneNumber: tempPhoneNumber
-        });
-        
-        setShowConnectModal(false);
-        setConnectStep('input');
-        setMessages([{ id: 'connected', text: '🟢 Bot Connected successfully! I am now online.', sender: 'bot', timestamp: new Date() }]);
-    }, 1500);
+        // Robust State Update
+        if (currentUser) {
+            const updatedUser = {
+                ...currentUser,
+                isConnected: true,
+                phoneNumber: tempPhoneNumber
+            };
+            
+            // Update local state
+            setCurrentUser(updatedUser);
+            
+            // Update global list immediately to ensure persistence
+            setUsers(prevUsers => prevUsers.map(u => 
+                u.id === currentUser.id ? updatedUser : u
+            ));
+            
+            setShowConnectModal(false);
+            setConnectStep('input');
+            setMessages(prev => [...prev, { 
+                id: 'connected-msg-' + Date.now(), 
+                text: '🟢 Bot Connected successfully! I am now online.', 
+                sender: 'bot', 
+                timestamp: new Date() 
+            }]);
+        }
+    }, 1000);
   };
 
   const handleDisconnect = () => {
